@@ -18,13 +18,7 @@ contract RaffleTest is Test {
 
     function setUp() public {
         raffle = new Raffle(
-            ENTRANCE_FEE,
-            INTERVAL,
-            VRF_COORDINATOR,
-            GAS_LANE,
-            SUBSCRIPTION_ID,
-            CALLBACK_GAS_LIMIT,
-            MAX_PLAYERS
+            ENTRANCE_FEE, INTERVAL, VRF_COORDINATOR, GAS_LANE, SUBSCRIPTION_ID, CALLBACK_GAS_LIMIT, MAX_PLAYERS
         );
     }
 
