@@ -19,22 +19,14 @@ contract RaffleFactory {
         uint256 subscriptionId,
         uint32 callbackGasLimit
     ) external returns (address) {
-
         // Validate pool size
         if (poolType != 5 && poolType != 10 && poolType != 25) {
             revert RaffleFactory__InvalidPool();
         }
 
         // Deploy new raffle
-        Raffle raffle = new Raffle(
-            entranceFee,
-            interval,
-            vrfCoordinator,
-            gasLane,
-            subscriptionId,
-            callbackGasLimit,
-            poolType
-        );
+        Raffle raffle =
+            new Raffle(entranceFee, interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit, poolType);
 
         deployedRaffles.push(address(raffle));
         emit RaffleCreated(address(raffle), poolType, entranceFee);
