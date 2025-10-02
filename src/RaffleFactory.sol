@@ -24,8 +24,7 @@ contract RaffleFactory {
         }
 
         // Deploy new raffle
-        Raffle raffle =
-            new Raffle(entranceFee, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit, poolType);
+        Raffle raffle = new Raffle(entranceFee, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit, poolType);
 
         deployedRaffles.push(address(raffle));
         emit RaffleCreated(address(raffle), poolType, entranceFee);
