@@ -13,7 +13,6 @@ contract RaffleTest is Test {
 
     // Dummy VRF constructor params for testing
     uint256 constant ENTRANCE_FEE = 0.1 ether;
-    uint256 constant INTERVAL = 30;
     // address constant VRF_COORDINATOR = address(mockVRF);
     bytes32 constant GAS_LANE = bytes32(0);
     uint256 public subId;
@@ -35,7 +34,7 @@ contract RaffleTest is Test {
         subId = mockVRF.createSubscription();
         mockVRF.fundSubscription(subId, 10 ether);
 
-        raffle = new Raffle(ENTRANCE_FEE, INTERVAL, address(mockVRF), GAS_LANE, subId, CALLBACK_GAS_LIMIT, MAX_PLAYERS);
+        raffle = new Raffle(ENTRANCE_FEE, address(mockVRF), GAS_LANE, subId, CALLBACK_GAS_LIMIT, MAX_PLAYERS);
 
         mockVRF.addConsumer(subId, address(raffle)); // Add the raffle as a consumer
         vm.deal(PLAYER, STARTING_BALANCE);
@@ -114,7 +113,6 @@ contract RaffleTest is Test {
     //////////////////////////////////////////////////////////////*/
     function test_getterFunctions_returns_accurateValues() public view {
         assertEq(raffle.getEntranceFee(), ENTRANCE_FEE);
-        assertEq(raffle.getInterval(), INTERVAL);
         assertEq(raffle.getMaxPlayers(), MAX_PLAYERS);
         assertEq(raffle.getPlayersCount(), 0);
         assertEq(uint256(raffle.getRaffleState()), uint256(Raffle.RaffleState.OPEN));

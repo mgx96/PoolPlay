@@ -90,7 +90,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         if (s_raffleState != RaffleState.OPEN) {
             revert Raffle__RaffleNotOpen();
         }
-        if (s_players.length > s_maxAmountOfPlayers) {
+        if (s_players.length >= s_maxAmountOfPlayers) {
             revert Raffle__RaffleIsFull();
         }
         s_players.push(payable(msg.sender));

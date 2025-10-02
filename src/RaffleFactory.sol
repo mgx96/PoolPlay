@@ -13,7 +13,6 @@ contract RaffleFactory {
     function createPool(
         uint8 poolType,
         uint256 entranceFee,
-        uint256 interval,
         address vrfCoordinator,
         bytes32 gasLane,
         uint256 subscriptionId,
@@ -25,8 +24,7 @@ contract RaffleFactory {
         }
 
         // Deploy new raffle
-        Raffle raffle =
-            new Raffle(entranceFee, interval, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit, poolType);
+        Raffle raffle = new Raffle(entranceFee, vrfCoordinator, gasLane, subscriptionId, callbackGasLimit, poolType);
 
         deployedRaffles.push(address(raffle));
         emit RaffleCreated(address(raffle), poolType, entranceFee);
