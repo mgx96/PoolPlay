@@ -1,28 +1,145 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "forge-std/Test.sol";
-import "../src/Raffle.sol"; // Adjust this import depending on your folder structure
+import {Test, console} from "forge-std/Test.sol";
+import {Raffle} from "../src/Raffle.sol"; // Adjust this import depending on your folder structure
+import {RaffleFactory} from "../src/RaffleFactory.sol";
+import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 
 contract RaffleTest is Test {
     Raffle raffle;
+    RaffleFactory factory;
+    VRFCoordinatorV2_5Mock mockVRF;
 
     // Dummy VRF constructor params for testing
     uint256 constant ENTRANCE_FEE = 0.1 ether;
     uint256 constant INTERVAL = 30;
-    address constant VRF_COORDINATOR = address(0x123);
+    // address constant VRF_COORDINATOR = address(mockVRF);
     bytes32 constant GAS_LANE = bytes32(0);
-    uint256 constant SUBSCRIPTION_ID = 1;
+    uint256 public subId;
     uint32 constant CALLBACK_GAS_LIMIT = 500000;
     uint8 constant MAX_PLAYERS = 5;
 
+    //mock player
+    address public PLAYER = makeAddr("player1");
+    uint256 public STARTING_BALANCE = 10 ether;
+
+    /* Events */
+    event RaffleEntered(address indexed player);
+    event WaitingForMorePlayers(uint256 currentPlayers, uint8 maxPlayers);
+    event WinnerPicked(address indexed winner);
+
     function setUp() public {
+        mockVRF = new VRFCoordinatorV2_5Mock(0.001 ether, 1 gwei, 1);
+        // Create subscription
+        subId = mockVRF.createSubscription();
+        mockVRF.fundSubscription(subId, 10 ether);
+
         raffle = new Raffle(
-            ENTRANCE_FEE, INTERVAL, VRF_COORDINATOR, GAS_LANE, SUBSCRIPTION_ID, CALLBACK_GAS_LIMIT, MAX_PLAYERS
+            ENTRANCE_FEE,
+            INTERVAL,
+            address(mockVRF),
+            GAS_LANE,
+            subId,
+            CALLBACK_GAS_LIMIT,
+            MAX_PLAYERS
         );
+
+        mockVRF.addConsumer(subId, address(raffle)); // Add the raffle as a consumer
+        vm.deal(PLAYER, STARTING_BALANCE);
     }
 
-    function testDeploys() public {
+    modifier raffleEntered() {
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: ENTRANCE_FEE}();
+        _;
+    }
+
+    modifier maxPlayersEntered() {
+        // Fill up the raffle with 5 players
+        for (uint160 i = 1; i <= 5; i++) {
+            address player = makeAddr(string.concat("player", vm.toString(i)));
+            vm.deal(player, 1 ether);
+            vm.prank(player);
+            raffle.enterRaffle{value: ENTRANCE_FEE}();
+        }
+        _;
+    }
+
+    function testDeploys() public view {
         assertTrue(address(raffle) != address(0));
+    }
+
+    //test_<unitUnderTest>_<stateOrCondition>_<expectedOutcome/Behaviour>
+
+    /*//////////////////////////////////////////////////////////////
+                           ENTER RAFFLE TESTS
+    //////////////////////////////////////////////////////////////*/
+    function test_enterRaffle_reverts_ifNotEnoughFee() public {
+        uint256 insufficienteFee = ENTRANCE_FEE - 0.05 ether;
+
+        vm.prank(PLAYER);
+        vm.expectRevert(Raffle.Raffle__NotEnoughETHEntered.selector);
+        raffle.enterRaffle{value: insufficienteFee}();
+    }
+
+    function test_enterRaffle_reverts_whenRaffleIsNotOpen()
+        public
+        maxPlayersEntered
+    {
+        // Call performUpkeep to simulate Chainlink Keepers
+        raffle.performUpkeep(""); //CALCULATING
+        assertEq(
+            uint256(raffle.getRaffleState()),
+            uint256(Raffle.RaffleState.CALCULATING)
+        );
+
+        vm.prank(PLAYER);
+        vm.expectRevert(Raffle.Raffle__RaffleNotOpen.selector);
+        raffle.enterRaffle{value: ENTRANCE_FEE}();
+    }
+
+    function test_enterRaffle_reverts_IfRaffleIsFull()
+        public
+        maxPlayersEntered
+    {
+        //raffle should be full (5/5 players)
+        assertEq(raffle.getPlayersCount(), 5);
+
+        // Try a 6th player
+        vm.prank(PLAYER);
+        vm.expectRevert(Raffle.Raffle__RaffleIsFull.selector);
+        raffle.enterRaffle{value: ENTRANCE_FEE}();
+    }
+
+    function test_enterRaffle_recordsPlayerAndEmitEvent() public {
+        vm.prank(PLAYER);
+        vm.expectEmit(true, false, false, false, address(raffle));
+        emit RaffleEntered(PLAYER);
+        raffle.enterRaffle{value: ENTRANCE_FEE}();
+        assertEq(raffle.getPlayersCount(), 1);
+    }
+
+    function test_enterRaffle_emits_waitingForMorePlayers()
+        public
+        raffleEntered
+    {
+        vm.expectEmit(false, false, false, false, address(raffle));
+        emit WaitingForMorePlayers(raffle.getPlayersCount(), MAX_PLAYERS);
+        raffle.enterRaffle{value: ENTRANCE_FEE}();
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                           GETTERS TESTS
+    //////////////////////////////////////////////////////////////*/
+    function test_getterFunctions_returns_accurateValues() public view {
+        assertEq(raffle.getEntranceFee(), ENTRANCE_FEE);
+        assertEq(raffle.getInterval(), INTERVAL);
+        assertEq(raffle.getMaxPlayers(), MAX_PLAYERS);
+        assertEq(raffle.getPlayersCount(), 0);
+        assertEq(
+            uint256(raffle.getRaffleState()),
+            uint256(Raffle.RaffleState.OPEN)
+        );
     }
 }
