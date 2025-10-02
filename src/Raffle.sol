@@ -51,13 +51,11 @@ contract Raffle is VRFConsumerBaseV2Plus {
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
     uint256 private immutable i_entranceFee;
-    uint256 private immutable i_interval;
     bytes32 private immutable i_keyHash;
     uint256 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
     address payable[] private s_players;
     uint8 private s_maxAmountOfPlayers;
-    uint256 private s_lastTimeStamp;
     address private s_recentWinner;
     RaffleState private s_raffleState;
 
@@ -68,7 +66,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
     constructor(
         uint256 entranceFee,
-        uint256 interval,
         address vrfCoordinator,
         bytes32 gasLane,
         uint256 subscriptionId,
@@ -77,7 +74,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
     ) VRFConsumerBaseV2Plus(vrfCoordinator) {
         i_entranceFee = entranceFee;
         // @dev The duration of the lottery in seconds
-        i_interval = interval;
         i_keyHash = gasLane;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
@@ -94,7 +90,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         if (s_raffleState != RaffleState.OPEN) {
             revert Raffle__RaffleNotOpen();
         }
-        if (s_players.length >= s_maxAmountOfPlayers) {
+        if (s_players.length > s_maxAmountOfPlayers) {
             revert Raffle__RaffleIsFull();
         }
         s_players.push(payable(msg.sender));
@@ -149,7 +145,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
         s_raffleState = RaffleState.OPEN;
         s_players = new address payable[](0);
-        s_lastTimeStamp = block.timestamp;
 
         (bool success,) = recentWinner.call{value: address(this).balance}("");
         if (!success) {
@@ -160,10 +155,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
     function getEntranceFee() public view returns (uint256) {
         return i_entranceFee;
-    }
-
-    function getInterval() public view returns (uint256) {
-        return i_interval;
     }
 
     function getMaxPlayers() public view returns (uint8) {
