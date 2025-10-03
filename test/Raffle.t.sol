@@ -9,6 +9,7 @@ import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VR
 contract RaffleTest is Test {
     Raffle raffle;
     RaffleFactory factory;
+    VRFCoordinatorV2_5Mock mockVRF;
 
     // Dummy VRF constructor params for testing
     uint256 constant ENTRANCE_FEE = 0.1 ether;
@@ -28,21 +29,14 @@ contract RaffleTest is Test {
     event WinnerPicked(address indexed winner);
 
     function setUp() public {
-        VRFCoordinatorV2_5Mock mockVRF = new VRFCoordinatorV2_5Mock(0.1 ether, 1 gwei, 0.04 ether);
-
-        subId = mockVRF.createSubscription(); // ✅ Assign to the state variable
+        mockVRF = new VRFCoordinatorV2_5Mock(0.001 ether, 1 gwei, 1);
+        // Create subscription
+        subId = mockVRF.createSubscription();
         mockVRF.fundSubscription(subId, 10 ether);
 
-        raffle = new Raffle(
-            ENTRANCE_FEE,
-            address(mockVRF),
-            GAS_LANE,
-            subId, // ✅ Now it has the correct subscription ID
-            CALLBACK_GAS_LIMIT,
-            MAX_PLAYERS
-        );
+        raffle = new Raffle(ENTRANCE_FEE, address(mockVRF), GAS_LANE, subId, CALLBACK_GAS_LIMIT, MAX_PLAYERS);
 
-        mockVRF.addConsumer(subId, address(raffle));
+        mockVRF.addConsumer(subId, address(raffle)); // Add the raffle as a consumer
         vm.deal(PLAYER, STARTING_BALANCE);
     }
 
