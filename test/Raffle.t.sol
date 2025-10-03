@@ -27,28 +27,25 @@ contract RaffleTest is Test {
     event WaitingForMorePlayers(uint256 currentPlayers, uint8 maxPlayers);
     event WinnerPicked(address indexed winner);
 
-   function setUp() public {
-    VRFCoordinatorV2_5Mock mockVRF = new VRFCoordinatorV2_5Mock(
-        0.1 ether,
-        1 gwei,
-        0.04 ether
-    );
-    
-    subId = mockVRF.createSubscription();  // ✅ Assign to the state variable
-    mockVRF.fundSubscription(subId, 10 ether);
-    
-    raffle = new Raffle(
-        ENTRANCE_FEE,
-        address(mockVRF),
-        GAS_LANE,
-        subId,  // ✅ Now it has the correct subscription ID
-        CALLBACK_GAS_LIMIT,
-        MAX_PLAYERS
-    );
+    function setUp() public {
+        VRFCoordinatorV2_5Mock mockVRF = new VRFCoordinatorV2_5Mock(0.1 ether, 1 gwei, 0.04 ether);
 
-    mockVRF.addConsumer(subId, address(raffle));
-    vm.deal(PLAYER, STARTING_BALANCE);
-}
+        subId = mockVRF.createSubscription(); // ✅ Assign to the state variable
+        mockVRF.fundSubscription(subId, 10 ether);
+
+        raffle = new Raffle(
+            ENTRANCE_FEE,
+            address(mockVRF),
+            GAS_LANE,
+            subId, // ✅ Now it has the correct subscription ID
+            CALLBACK_GAS_LIMIT,
+            MAX_PLAYERS
+        );
+
+        mockVRF.addConsumer(subId, address(raffle));
+        vm.deal(PLAYER, STARTING_BALANCE);
+    }
+
     modifier raffleEntered() {
         vm.prank(PLAYER);
         raffle.enterRaffle{value: ENTRANCE_FEE}();
@@ -83,26 +80,17 @@ contract RaffleTest is Test {
         raffle.enterRaffle{value: insufficienteFee}();
     }
 
-    function test_enterRaffle_reverts_whenRaffleIsNotOpen()
-        public
-        maxPlayersEntered
-    {
+    function test_enterRaffle_reverts_whenRaffleIsNotOpen() public maxPlayersEntered {
         // Call performUpkeep to simulate Chainlink Keepers
         raffle.performUpkeep(""); //CALCULATING
-        assertEq(
-            uint256(raffle.getRaffleState()),
-            uint256(Raffle.RaffleState.CALCULATING)
-        );
+        assertEq(uint256(raffle.getRaffleState()), uint256(Raffle.RaffleState.CALCULATING));
 
         vm.prank(PLAYER);
         vm.expectRevert(Raffle.Raffle__RaffleNotOpen.selector);
         raffle.enterRaffle{value: ENTRANCE_FEE}();
     }
 
-    function test_enterRaffle_reverts_IfRaffleIsFull()
-        public
-        maxPlayersEntered
-    {
+    function test_enterRaffle_reverts_IfRaffleIsFull() public maxPlayersEntered {
         //raffle should be full (5/5 players)
         assertEq(raffle.getPlayersCount(), 5);
 
@@ -120,10 +108,7 @@ contract RaffleTest is Test {
         assertEq(raffle.getPlayersCount(), 1);
     }
 
-    function test_enterRaffle_emits_waitingForMorePlayers()
-        public
-        raffleEntered
-    {
+    function test_enterRaffle_emits_waitingForMorePlayers() public raffleEntered {
         vm.expectEmit(false, false, false, false, address(raffle));
         emit WaitingForMorePlayers(raffle.getPlayersCount(), MAX_PLAYERS);
         raffle.enterRaffle{value: ENTRANCE_FEE}();
@@ -136,9 +121,6 @@ contract RaffleTest is Test {
         assertEq(raffle.getEntranceFee(), ENTRANCE_FEE);
         assertEq(raffle.getMaxPlayers(), MAX_PLAYERS);
         assertEq(raffle.getPlayersCount(), 0);
-        assertEq(
-            uint256(raffle.getRaffleState()),
-            uint256(Raffle.RaffleState.OPEN)
-        );
+        assertEq(uint256(raffle.getRaffleState()), uint256(Raffle.RaffleState.OPEN));
     }
 }
