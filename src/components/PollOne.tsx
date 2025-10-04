@@ -1,14 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Button } from "./ui/button";
 import {
-  Clipboard,
-  Coins,
-  GoalIcon,
-  LoaderCircleIcon,
-  PartyPopper,
+  Copy,
+  Loader2,
   Trophy,
   Users,
+  Zap,
 } from "lucide-react";
 const poolPrize = "5 ether";
 const entranceFee = "5$";
@@ -23,75 +20,71 @@ const PollOne = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-  const handleRaffleEnter = async () => {
+  const handleEnterRaffle = async () => {
     console.log("cliekced");
     setLoading(true);
   };
   return (
-    <div className="flex flex-col hover:scale-101 bg-gradient-to-br from-neutral-600 via-neutral-700 to-neutral-800 items-center px-3 space-y-5 w-80 py-3 relative border-2 hover:border-cyan-300 rounded-3xl">
-      <div className="object-cover items-center abosolute rounded-2xl">
-        <img src="poolOne.jpg" className="rounded-2xl" />
+    <div className="bg-teal-600 rounded-2xl p-6 w-64 shadow-lg">
+        <div className="flex flex-col items-center mb-6">
+          <div className="bg-teal-500/30 p-4 rounded-xl mb-4">
+            <div className="w-16 h-16 border-4 border-teal-300 rounded-lg relative">
+              <div className="absolute -top-3 -left-3 w-16 h-16 border-4 border-teal-200 rounded-lg"></div>
+            </div>
+          </div>
+          <h2 className="text-white text-2xl font-bold">5 Player Pool</h2>
+        </div>
+
+        <div className="bg-white rounded-xl p-4 space-y-3 mb-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-gray-600" />
+              <span className="text-sm text-gray-700">Pool Prize</span>
+            </div>
+            <span className="font-bold text-gray-900">{poolPrize}</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 text-gray-600">💰</div>
+              <span className="text-sm text-gray-700">{entranceFee}</span>
+            </div>
+            <span className="font-bold text-gray-900">0.1ETH</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-gray-600" />
+              <span className="text-sm text-gray-700">{Players}</span>
+            </div>
+            <span className="font-bold text-gray-900">2/5</span>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-gray-600" />
+              <span className="text-sm text-gray-700">Last Winner</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-bold text-gray-900 overflow-clip w-22 overflow-x-hidden">{lastWinener}</span>
+              <Copy
+                onClick={() => handleCopy()} 
+                className={`w-3.5 h-3.5 cursor-pointer ${copied ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'}`}
+              />
+            </div>
+          </div>
+        </div>
+
+        <button 
+          onClick={handleEnterRaffle}
+          disabled={loading}
+          className="w-full bg-teal-800 hover:bg-teal-900 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+          Enter Raffle
+        </button>
       </div>
-      <h1 className="text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 h-10 flex items-center justify-center gap-2 font-extrabold  tracking-tight bg-neutral-500 w-full rounded-md shadow-sm">
-        <span className="text-yellow-500 font-black">5 </span>Player Pool
-      </h1>
-      <div className="flex flex-col w-full space-y-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-        {/* Pool Prize */}
-        <div className="flex items-center justify-between px-3 ">
-          <div className="flex items-center gap-2">
-            <Trophy className="size-5 text-amber-500" />
-            <span className="font-semibold shine-text">Pool Prize</span>
-          </div>
-          <span className="text-neutral-800 font-bold">{poolPrize}</span>
-        </div>
 
-        {/* Entrance Fee */}
-        <div className="flex items-center justify-between px-3">
-          <div className="flex items-center gap-2">
-            <GoalIcon className="size-5 text-blue-500" />
-            <span className="font-semibold shine-text">Entrance Fee</span>
-          </div>
-          <span className="text-neutral-800 font-bold">{entranceFee}</span>
-        </div>
-
-        {/* Players */}
-        <div className="flex items-center justify-between px-3">
-          <div className="flex items-center gap-2">
-            <Users className="size-5 text-green-500" />
-            <span className="font-medium shine-text">Players</span>
-          </div>
-          <span className="text-neutral-800 font-bold">{Players}</span>
-        </div>
-
-        {/* Last Winner with Copy Button */}
-        <div className="flex items-center justify-between px-3">
-          <div className="flex items-center gap-2">
-            <PartyPopper className="size-5 text-purple-500" />
-            <span className="font-semibold shine-text">Last Winner</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-neutral-800 font-bold  overflow-clip w-22 overflow-x-hidden m3-1">
-              {lastWinener}
-            </span>
-            <Clipboard
-              onClick={handleCopy}
-              className={`size-4 cursor-pointer m-0 p-0   ${
-                copied
-                  ? "text-neutral-400 bg-transparent"
-                  : "text-neutral-800 bg-transparent"
-              }`}
-            />
-          </div>
-        </div>
-      </div>
-      <Button
-        className="flex items-center cursor-pointer justify-center w-full rounded-b-2xl"
-        onClick={handleRaffleEnter}
-      >
-        {loading ? <LoaderCircleIcon className="animate-spin" /> : <Coins />}
-        Enter Raffle
-      </Button>
-    </div>
   );
 };
 
