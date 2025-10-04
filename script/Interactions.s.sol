@@ -12,11 +12,9 @@ contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint256, address) {
         HelperConfig helperConfig = new HelperConfig();
         address vrfCoordinator = helperConfig.getConfigByChainId(block.chainid).vrfCoordinator;
-        uint256 account = helperConfig.getConfigByChainId(block.chainid).account; // get the account from the config
-        // create subscription
-        // (uint256 subId, ) = createSubscription(vrfCoordinator, account);
-        // return (uint64(subId), vrfCoordinator);
-        return createSubscription(vrfCoordinator, account);
+
+        (uint256 subId,) = createSubscription(vrfCoordinator);
+        return (uint64(subId), vrfCoordinator);
     }
 
     function createSubscription(address vrfCoordinator, uint256 account) public returns (uint256, address) {
@@ -42,25 +40,10 @@ contract FundSubscription is Script {
         HelperConfig helperConfig = new HelperConfig();
         address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
         uint256 subscriptionId = helperConfig.getConfig().subscriptionId;
-        uint256 account = helperConfig.getConfig().account;
-        address mockToken = helperConfig.getConfig().token;
-
-        if (subscriptionId == 0) {
-            CreateSubscription createSub = new CreateSubscription();
-            (uint256 updatedSubId, address updatedVRFv2) = createSub.run();
-            subscriptionId = updatedSubId;
-            vrfCoordinator = updatedVRFv2;
-        }
-
-        fundSubscription(vrfCoordinator, subscriptionId, account, mockToken);
+        fundSubscription(vrfCoordinator, subscriptionId);
     }
 
-    function fundSubscription(
-        address vrfCoordinator,
-        uint256 subscriptionId, // address linkToken
-        uint256 account,
-        address mockToken
-    ) public {
+    function fundSubscription(address vrfCoordinator, uint256 subscriptionId) public {
         console.log("Funding subscription on chainid ", block.chainid);
         console.log("with subscriptionId ", subscriptionId);
         console.log("and vrfCoordinator ", vrfCoordinator);
