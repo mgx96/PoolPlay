@@ -115,9 +115,11 @@ contract Raffle is VRFConsumerBaseV2Plus {
     function checkUpkeep(bytes memory) public view returns (bool upkeepNeeded, bytes memory) {
         bool isOpen = s_raffleState == RaffleState.OPEN;
         bool hasBalance = address(this).balance > 0;
-        bool hasPlayers = s_players.length > 0;
+        // bool hasPlayers = s_players.length > 0;
         bool requiredAmountOfPlayers = s_players.length == s_maxAmountOfPlayers;
-        upkeepNeeded = isOpen && hasBalance && hasPlayers && requiredAmountOfPlayers;
+        upkeepNeeded = isOpen && hasBalance
+        // hasPlayers &&
+        && requiredAmountOfPlayers;
         return (upkeepNeeded, "");
     }
 

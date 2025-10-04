@@ -4,20 +4,23 @@ pragma solidity ^0.8.19;
 import {Test, console} from "forge-std/Test.sol";
 import {Raffle} from "../src/Raffle.sol"; // Adjust this import depending on your folder structure
 import {RaffleFactory} from "../src/RaffleFactory.sol";
+import {DeployRaffle} from "../script/DeployRaffle.s.sol";
+import {HelperConfig, CodeConstants} from "../script/HelperConfig.s.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {MockToken} from "./mocks/TokenToFundVRF.sol";
 
-contract RaffleTest is Test {
+contract RaffleTest is Test, CodeConstants {
     Raffle raffle;
     RaffleFactory factory;
-    VRFCoordinatorV2_5Mock mockVRF;
+    HelperConfig public helperConfig;
 
     // Dummy VRF constructor params for testing
-    uint256 constant ENTRANCE_FEE = 0.1 ether;
-    // address constant VRF_COORDINATOR = address(mockVRF);
-    bytes32 constant GAS_LANE = bytes32(0);
+    uint256 ENTRANCE_FEE = 0.1 ether;
+    address VRF_COORDINATOR;
+    bytes32 GAS_LANE = bytes32(0);
     uint256 public subId;
-    uint32 constant CALLBACK_GAS_LIMIT = 500000;
-    uint8 constant MAX_PLAYERS = 5;
+    uint32 CALLBACK_GAS_LIMIT = 500000;
+    uint8 MAX_PLAYERS;
 
     //mock player
     address public PLAYER = makeAddr("player1");
@@ -29,14 +32,20 @@ contract RaffleTest is Test {
     event WinnerPicked(address indexed winner);
 
     function setUp() public {
-        mockVRF = new VRFCoordinatorV2_5Mock(0.001 ether, 1 gwei, 1);
-        // Create subscription
-        subId = mockVRF.createSubscription();
-        mockVRF.fundSubscription(subId, 10 ether);
+        DeployRaffle deployer = new DeployRaffle();
+        (raffle, helperConfig) = deployer.deployRaffle();
+        HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
 
-        raffle = new Raffle(ENTRANCE_FEE, address(mockVRF), GAS_LANE, subId, CALLBACK_GAS_LIMIT, MAX_PLAYERS);
+        ENTRANCE_FEE = config.entranceFee;
+        VRF_COORDINATOR = config.vrfCoordinator;
+        GAS_LANE = config.gasLane;
+        CALLBACK_GAS_LIMIT = config.callbackGasLimit;
+        MAX_PLAYERS = config.maxAmountOfPlayers;
+        subId = config.subscriptionId;
 
-        mockVRF.addConsumer(subId, address(raffle)); // Add the raffle as a consumer
+        vm.startPrank(address(this)); // or use config.account if needed
+        VRFCoordinatorV2_5Mock(VRF_COORDINATOR).fundSubscription(subId, 10 ether);
+        vm.stopPrank();
         vm.deal(PLAYER, STARTING_BALANCE);
     }
 
@@ -67,7 +76,7 @@ contract RaffleTest is Test {
                            ENTER RAFFLE TESTS
     //////////////////////////////////////////////////////////////*/
     function test_enterRaffle_reverts_ifNotEnoughFee() public {
-        uint256 insufficienteFee = ENTRANCE_FEE - 0.05 ether;
+        uint256 insufficienteFee = ENTRANCE_FEE - 0.005 ether;
 
         vm.prank(PLAYER);
         vm.expectRevert(Raffle.Raffle__NotEnoughETHEntered.selector);
@@ -106,6 +115,34 @@ contract RaffleTest is Test {
         vm.expectEmit(false, false, false, false, address(raffle));
         emit WaitingForMorePlayers(raffle.getPlayersCount(), MAX_PLAYERS);
         raffle.enterRaffle{value: ENTRANCE_FEE}();
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                          CHECKUPKEEP TESTS
+    //////////////////////////////////////////////////////////////*/
+    function test_checkUpkeep_returnsFalse_ifRaffleNotOpen() public maxPlayersEntered {
+        // move to CALCULATING
+        raffle.performUpkeep("");
+
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+        assertFalse(upkeepNeeded);
+    }
+
+    function test_checkUpkeep_returnsFalse_ifNoBalance() public view {
+        // just created raffle, no ETH balance
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+        assertFalse(upkeepNeeded);
+    }
+
+    function test_checkUpkeep_returnsFalse_ifNotEnoughPlayers() public view {
+        // no players yet
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+        assertFalse(upkeepNeeded);
+    }
+
+    function test_checkUpkeep_returnsTrue_whenAllConditionsMet() public maxPlayersEntered {
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+        assertTrue(upkeepNeeded);
     }
 
     /*//////////////////////////////////////////////////////////////
