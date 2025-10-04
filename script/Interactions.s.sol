@@ -12,7 +12,6 @@ contract CreateSubscription is Script {
         HelperConfig helperConfig = new HelperConfig();
         address vrfCoordinator = helperConfig.getConfigByChainId(block.chainid).vrfCoordinator;
 
-        // create subscription
         (uint256 subId,) = createSubscription(vrfCoordinator);
         return (uint64(subId), vrfCoordinator);
     }
@@ -40,14 +39,10 @@ contract FundSubscription is Script, CodeConstants {
         HelperConfig helperConfig = new HelperConfig();
         address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
         uint256 subscriptionId = helperConfig.getConfig().subscriptionId;
-        // address linkToken = helperConfig.getConfig().link;
         fundSubscription(vrfCoordinator, subscriptionId);
     }
 
-    function fundSubscription(
-        address vrfCoordinator,
-        uint256 subscriptionId // address linkToken
-    ) public {
+    function fundSubscription(address vrfCoordinator, uint256 subscriptionId) public {
         console.log("Funding subscription on chainid ", block.chainid);
         console.log("with subscriptionId ", subscriptionId);
         console.log("and vrfCoordinator ", vrfCoordinator);

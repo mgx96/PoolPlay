@@ -10,7 +10,7 @@ abstract contract CodeConstants {
     uint96 public constant MOCK_GAS_PRICE = 1e9; // 1 gwei
     int256 public constant MOCK_WEI_PER_UNIT_LINK = 4e15; // 1 LINK
     uint256 public constant ARBITRUM_MAINNET_CHAINID = 42161;
-    uint256 public constant ARBITRUM_SEPOLIA_CHAINID = 11155111;
+    uint256 public constant ARBITRUM_SEPOLIA_CHAINID = 421614;
     uint256 public constant ETH_LOCALHOST_CHAINID = 31337;
 }
 
