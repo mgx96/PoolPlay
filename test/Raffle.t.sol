@@ -44,7 +44,10 @@ contract RaffleTest is Test, CodeConstants {
         subId = config.subscriptionId;
 
         vm.startPrank(address(this)); // or use config.account if needed
-        VRFCoordinatorV2_5Mock(VRF_COORDINATOR).fundSubscription(subId, 10 ether);
+        VRFCoordinatorV2_5Mock(VRF_COORDINATOR).fundSubscription(
+            subId,
+            10 ether
+        );
         vm.stopPrank();
         vm.deal(PLAYER, STARTING_BALANCE);
     }
@@ -83,17 +86,26 @@ contract RaffleTest is Test, CodeConstants {
         raffle.enterRaffle{value: insufficienteFee}();
     }
 
-    function test_enterRaffle_reverts_whenRaffleIsNotOpen() public maxPlayersEntered {
+    function test_enterRaffle_reverts_whenRaffleIsNotOpen()
+        public
+        maxPlayersEntered
+    {
         // Call performUpkeep to simulate Chainlink Keepers
         raffle.performUpkeep(""); //CALCULATING
-        assertEq(uint256(raffle.getRaffleState()), uint256(Raffle.RaffleState.CALCULATING));
+        assertEq(
+            uint256(raffle.getRaffleState()),
+            uint256(Raffle.RaffleState.CALCULATING)
+        );
 
         vm.prank(PLAYER);
         vm.expectRevert(Raffle.Raffle__RaffleNotOpen.selector);
         raffle.enterRaffle{value: ENTRANCE_FEE}();
     }
 
-    function test_enterRaffle_reverts_IfRaffleIsFull() public maxPlayersEntered {
+    function test_enterRaffle_reverts_IfRaffleIsFull()
+        public
+        maxPlayersEntered
+    {
         //raffle should be full (5/5 players)
         assertEq(raffle.getPlayersCount(), 5);
 
@@ -111,7 +123,10 @@ contract RaffleTest is Test, CodeConstants {
         assertEq(raffle.getPlayersCount(), 1);
     }
 
-    function test_enterRaffle_emits_waitingForMorePlayers() public raffleEntered {
+    function test_enterRaffle_emits_waitingForMorePlayers()
+        public
+        raffleEntered
+    {
         vm.expectEmit(false, false, false, false, address(raffle));
         emit WaitingForMorePlayers(raffle.getPlayersCount(), MAX_PLAYERS);
         raffle.enterRaffle{value: ENTRANCE_FEE}();
@@ -120,29 +135,56 @@ contract RaffleTest is Test, CodeConstants {
     /*//////////////////////////////////////////////////////////////
                           CHECKUPKEEP TESTS
     //////////////////////////////////////////////////////////////*/
-    function test_checkUpkeep_returnsFalse_ifRaffleNotOpen() public maxPlayersEntered {
+    function test_checkUpkeep_returnsFalse_ifRaffleNotOpen()
+        public
+        maxPlayersEntered
+    {
         // move to CALCULATING
         raffle.performUpkeep("");
 
-        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
         assertFalse(upkeepNeeded);
     }
 
     function test_checkUpkeep_returnsFalse_ifNoBalance() public view {
         // just created raffle, no ETH balance
-        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
         assertFalse(upkeepNeeded);
     }
 
     function test_checkUpkeep_returnsFalse_ifNotEnoughPlayers() public view {
         // no players yet
-        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
         assertFalse(upkeepNeeded);
     }
 
-    function test_checkUpkeep_returnsTrue_whenAllConditionsMet() public maxPlayersEntered {
-        (bool upkeepNeeded,) = raffle.checkUpkeep("");
+    function test_checkUpkeep_returnsTrue_whenAllConditionsMet()
+        public
+        maxPlayersEntered
+    {
+        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
         assertTrue(upkeepNeeded);
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                          PERFORMUPKEEP TESTS
+    //////////////////////////////////////////////////////////////*/
+    function test_performUpkeep_reverts_ifUpkeepNotNeeded() public {
+        // no players, no balance
+        vm.expectRevert();
+        raffle.performUpkeep("");
+    }
+
+    function test_performUpkeep_setsStateToCalculating()
+        public
+        maxPlayersEntered
+    {
+        raffle.performUpkeep("");
+
+        assertEq(
+            uint256(raffle.getRaffleState()),
+            uint256(Raffle.RaffleState.CALCULATING)
+        );
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -152,6 +194,9 @@ contract RaffleTest is Test, CodeConstants {
         assertEq(raffle.getEntranceFee(), ENTRANCE_FEE);
         assertEq(raffle.getMaxPlayers(), MAX_PLAYERS);
         assertEq(raffle.getPlayersCount(), 0);
-        assertEq(uint256(raffle.getRaffleState()), uint256(Raffle.RaffleState.OPEN));
+        assertEq(
+            uint256(raffle.getRaffleState()),
+            uint256(Raffle.RaffleState.OPEN)
+        );
     }
 }
