@@ -2,7 +2,8 @@
 pragma solidity ^0.8.19;
 
 import {Script} from "forge-std/Script.sol";
-import {VRFCoordinatorV2_5Mock} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {VRFCoordinatorV2_5Mock} from
+    "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {MockToken} from "../test/mocks/TokenToFundVRF.sol";
 import {CreateSubscription} from "./Interactions.s.sol";
 
@@ -28,6 +29,7 @@ contract HelperConfig is CodeConstants, Script {
         uint256 account;
         address token;
     }
+
     uint256 public constant DEFAULT_ANVIL_PRIVATE_KEY =
         0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
     NetworkConfig public localNetworkConfig;
@@ -43,9 +45,7 @@ contract HelperConfig is CodeConstants, Script {
         return getConfigByChainId(block.chainid);
     }
 
-    function getConfigByChainId(
-        uint256 chainId
-    ) public returns (NetworkConfig memory) {
+    function getConfigByChainId(uint256 chainId) public returns (NetworkConfig memory) {
         if (networkConfigs[chainId].vrfCoordinator != address(0)) {
             return networkConfigs[chainId];
         } else if (chainId == ETH_LOCALHOST_CHAINID) {
@@ -56,56 +56,40 @@ contract HelperConfig is CodeConstants, Script {
         }
     }
 
-    function getArbitrumSepoliaConfig()
-        public
-        pure
-        returns (NetworkConfig memory)
-    {
-        return
-            NetworkConfig({
-                entranceFee: 0.01 ether, // 1e16
-                vrfCoordinator: 0x50d47e4142598E3411aA864e08a44284e471AC6f,
-                gasLane: 0x54d8e6f2c1e1fdd4f8f7c5144a7be3a3f0a2b3b4c6d5e6f7a8b9c0d1e2f3a4b5,
-                subscriptionId: 0, // update this with your subscription id
-                callbackGasLimit: 5000000,
-                maxAmountOfPlayers: 10,
-                account: 123, //dummy,
-                token: 0x779877A7B0D9E8603169DdbD7836e478b4624789 // Sepolia ETH token address,
-            });
+    function getArbitrumSepoliaConfig() public pure returns (NetworkConfig memory) {
+        return NetworkConfig({
+            entranceFee: 0.01 ether, // 1e16
+            vrfCoordinator: 0x50d47e4142598E3411aA864e08a44284e471AC6f,
+            gasLane: 0x54d8e6f2c1e1fdd4f8f7c5144a7be3a3f0a2b3b4c6d5e6f7a8b9c0d1e2f3a4b5,
+            subscriptionId: 0, // update this with your subscription id
+            callbackGasLimit: 5000000,
+            maxAmountOfPlayers: 10,
+            account: 123, //dummy,
+            token: 0x779877A7B0D9E8603169DdbD7836e478b4624789 // Sepolia ETH token address,
+        });
     }
 
-    function getArbitrumMainnetConfig()
-        public
-        pure
-        returns (NetworkConfig memory)
-    {
-        return
-            NetworkConfig({
-                entranceFee: 0.01 ether, // 1e16
-                vrfCoordinator: 0x41034678D6C633D8a95c75e1138A360a28bA15d1,
-                gasLane: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef,
-                subscriptionId: 0, // update this with your subscription id
-                callbackGasLimit: 5000000,
-                maxAmountOfPlayers: 10,
-                account: 123, //dummy,
-                token: 0x1CcCA1cE62c62F7Be95d4A67722a8fDbed6EEcb4
-            });
+    function getArbitrumMainnetConfig() public pure returns (NetworkConfig memory) {
+        return NetworkConfig({
+            entranceFee: 0.01 ether, // 1e16
+            vrfCoordinator: 0x41034678D6C633D8a95c75e1138A360a28bA15d1,
+            gasLane: 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef,
+            subscriptionId: 0, // update this with your subscription id
+            callbackGasLimit: 5000000,
+            maxAmountOfPlayers: 10,
+            account: 123, //dummy,
+            token: 0x1CcCA1cE62c62F7Be95d4A67722a8fDbed6EEcb4
+        });
     }
 
-    function getOrCreateAnvilEthConfig()
-        public
-        returns (NetworkConfig memory anvilNetworkConfig)
-    {
+    function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory anvilNetworkConfig) {
         // Check to see if we set an active network localNetworkConfig
         if (localNetworkConfig.vrfCoordinator != address(0)) {
             return localNetworkConfig;
         }
         vm.startBroadcast(DEFAULT_ANVIL_PRIVATE_KEY);
-        VRFCoordinatorV2_5Mock vrfCoordinatorMock = new VRFCoordinatorV2_5Mock(
-            MOCK_BASE_FEE,
-            MOCK_GAS_PRICE,
-            MOCK_WEI_PER_UNIT_LINK
-        ); //uint96 _baseFee, uint96 _gasPrice, int256 _weiPerUnitLink
+        VRFCoordinatorV2_5Mock vrfCoordinatorMock =
+            new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE, MOCK_WEI_PER_UNIT_LINK); //uint96 _baseFee, uint96 _gasPrice, int256 _weiPerUnitLink
 
         MockToken linkToken = new MockToken(1e18);
         uint256 subscriptionId = vrfCoordinatorMock.createSubscription();
