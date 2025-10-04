@@ -146,6 +146,21 @@ contract RaffleTest is Test, CodeConstants {
     }
 
     /*//////////////////////////////////////////////////////////////
+                          PERFORMUPKEEP TESTS
+    //////////////////////////////////////////////////////////////*/
+    function test_performUpkeep_reverts_ifUpkeepNotNeeded() public {
+        // no players, no balance
+        vm.expectRevert();
+        raffle.performUpkeep("");
+    }
+
+    function test_performUpkeep_setsStateToCalculating() public maxPlayersEntered {
+        raffle.performUpkeep("");
+
+        assertEq(uint256(raffle.getRaffleState()), uint256(Raffle.RaffleState.CALCULATING));
+    }
+
+    /*//////////////////////////////////////////////////////////////
                            GETTERS TESTS
     //////////////////////////////////////////////////////////////*/
     function test_getterFunctions_returns_accurateValues() public view {
