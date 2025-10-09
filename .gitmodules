@@ -6,4 +6,4 @@
 	url = https://github.com/chainlink/chainlink-brownie-contracts
 [submodule "lib/foundry-devops"]
 	path = lib/foundry-devops
-	url = https://github.com/foudry/foundry-devops
+	url = https://github.com/Cyfrin/foundry-devops

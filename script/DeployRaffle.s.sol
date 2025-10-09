@@ -1,30 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.22;
 
-import "forge-std/Script.sol";
+import {Script} from "lib/forge-std/src/Script.sol";
 import {Raffle} from "../src/Raffle.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
-import {CreateSubscription} from "./Interactions.s.sol";
+import {AddConsumer} from "./inetraction.s.sol";
 
 contract DeployRaffle is Script {
-    function run() external {
-        vm.startBroadcast();
-
-        vm.stopBroadcast();
+    function run() public {
+        deployRaffle();
     }
 
-    function deployRaffle() external returns (Raffle, HelperConfig) {
+    function deployRaffle() public {
+        AddConsumer consumer = new AddConsumer(); // init!
         HelperConfig helperConfig = new HelperConfig();
-
-        // local -> deploy mocks, get local config
-        // sepolia -> get sepolia config
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
 
-        if (config.subscriptionId == 0) {
-            CreateSubscription createSubscription = new CreateSubscription();
-            (config.subscriptionId, config.vrfCoordinator) =
-                createSubscription.createSubscription(config.vrfCoordinator);
-        }
         vm.startBroadcast();
         Raffle raffle = new Raffle(
             config.entranceFee,
@@ -35,6 +26,8 @@ contract DeployRaffle is Script {
             config.maxAmountOfPlayers
         );
         vm.stopBroadcast();
-        return (raffle, helperConfig);
+        if (block.chainid == 31337) {
+            consumer.addConsumerByConfig(address(raffle));
+        }
     }
 }

@@ -1,21 +1,29 @@
-# Makefile for deploying Solidity contracts with Foundry
 
-# CONFIG
-CONTRACT=MyContract
-ETH_SEPOLIA_RPC=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
-ARB_SEPOLIA_RPC=https://arb-sepolia.g.alchemy.com/v2/YOUR_KEY
-ARB_MAINNET_RPC=https://arb-mainnet.g.alchemy.com/v2/YOUR_KEY
-ANVIL_RPC=http://127.0.0.1:8545
+SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/QlXFO2edkPcV7HHJcx89G
+ARBITRUM_SEPOLIA=https://arb-sepolia.g.alchemy.com/v2/QlXFO2edkPcV7HHJcx89G
+ARBITRUM_MAINNET=https://arb-mainnet.g.alchemy.com/v2/QlXFO2edkPcV7HHJcx89G
+ANVIL_RPC_URL=http://127.0.0.1:8545
 
-# DEPLOY COMMANDS
-deploy-eth-sepolia:
-	forge script script/DeployRaffle.s.sol:DeployRaffle --rpc-url $(ETH_SEPOLIA_RPC) --broadcast --private-key $$ETH_SEPOLIA_PRIVATE_KEY
+# Private key / account
+PRIVATE_KEY=your_private_key_here   # or set as env variable
+ACCOUNT=keyStore   # for Anvil / local default signer index
 
-deploy-arb-sepolia:
-	forge script script/DeployRaffle.s.sol:DeployRaffle --rpc-url $(ARB_SEPOLIA_RPC) --broadcast --private-key $$ARB_SEPOLIA_PRIVATE_KEY
+# Forge deploy script
+FORGE_SCRIPT=forge script script/DeployRaffle.s.sol:DeployRaffle
 
-deploy-arb-mainnet:
-	forge script script/DeployRaffle.s.sol:DeployRaffle --rpc-url $(ARB_MAINNET_RPC) --broadcast --private-key $$ARB_MAINNET_PRIVATE_KEY
+# Pre-deployed contracts (if any)
+ARB_SEPOLIA_CONTRACT=0x1473A50d9868fBC49eD6Dcc5717b9DFb4c9EA034
+ETH_SEPOLIA_CONTRACT=0xc025C97BE940c53080D6fA437C684334fC0261D5
+
+# Targets
+ethSepolia:
+	${FORGE_SCRIPT} --rpc-url ${SEPOLIA_RPC_URL} --account ${ACCOUNT} --broadcast --verify -vvv
+
+arbSepolia:
+	${FORGE_SCRIPT} --rpc-url ${ARBITRUM_SEPOLIA} --account ${ACCOUNT} --broadcast --verify -vvv
+
+arbMainnet:
+	${FORGE_SCRIPT} --rpc-url ${ARBITRUM_MAINNET} --account ${ACCOUNT} --broadcast --verify -vvv
 
 anvil:
-	forge script script/DeployRaffle.s.sol:DeployRaffle --rpc-url $(ANVIL_RPC) --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+	${FORGE_SCRIPT} --rpc-url ${ANVIL_RPC_URL} --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --broadcast -vvvv
