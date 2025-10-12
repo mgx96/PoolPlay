@@ -1,12 +1,8 @@
-import { useState } from "react";
 import { Button } from "./ui/button";
-import { LoaderCircleIcon, Wallet2 } from "lucide-react";
+import { Wallet2 } from "lucide-react";
+import { connectWallet } from "@/server/contract";
 
 const Navbar = () => {
-  const [loading, setLoading] = useState(false);
-  const connectWallet = async () => {
-    setLoading(true);
-  };
   return (
     <div className="px-12 py-4 w-full h-fit flex justify-between items-center">
       <div>
@@ -14,7 +10,7 @@ const Navbar = () => {
       </div>
       <div>
         <Button onClick={connectWallet} className="cursor-pointer">
-          {loading ? <LoaderCircleIcon className="animate-spin" /> : <Wallet2 />}
+          <Wallet2 />
           Connect wallet
         </Button>
       </div>

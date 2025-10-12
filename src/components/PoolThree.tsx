@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { enterRaffle } from "@/server/contract";
 import { Copy, Loader2, Trophy, Users, Zap } from "lucide-react";
 const poolPrize = "5 ether";
 const entranceFee = "5$";
@@ -17,6 +18,8 @@ const PoolThree = () => {
   const handleEnterRaffle = async () => {
     console.log("cliekced");
     setLoading(true);
+    await enterRaffle("0.1");
+
   };
   return (
     <div className="bg-green-600 rounded-2xl p-6 w-64 shadow-lg">

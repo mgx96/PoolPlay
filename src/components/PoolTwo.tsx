@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
+import { enterRaffle } from "@/server/contract";
 import {
+
   Copy,
   Loader2,
   Trophy,
@@ -23,6 +25,8 @@ const PoolTwo = () => {
   const handleEnterRaffle = async () => {
     console.log("cliekced");
     setLoading(true);
+    await enterRaffle("0.5")
+    setLoading(false);
   };
   return (
     <div className="bg-red-400 rounded-2xl p-6 w-64 shadow-lg">
