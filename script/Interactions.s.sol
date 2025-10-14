@@ -83,12 +83,10 @@ contract AddConsumer is Script {
     }
 
     function addConsumerByConfig(address _mostRecentDEployedRaffle) public {
-        console.log("Adding consumer using config for Raffle:", _mostRecentDEployedRaffle);
         HelperConfig config = new HelperConfig();
         address vrfCoordinator = config.getConfig().vrfCoordinator;
         uint256 account = config.getConfig().account;
         uint256 subsCriptionId = config.getConfig().subscriptionId;
-        console.log("Account:", account);
 
         if (subsCriptionId == 0) {
             console.log("No subscription found, creating a new one...");
@@ -104,13 +102,8 @@ contract AddConsumer is Script {
     function addconsum(address _contractToAddAsCOns, uint64 _subscriptionId, address _crfContract, uint256 _account)
         public
     {
-        console.log("Adding consumer to contract:", _contractToAddAsCOns);
-        console.log("VRFCoordinator:", _crfContract, "SubscriptionId:", _subscriptionId);
-
         vm.startBroadcast(_account);
         VRFCoordinatorV2Mock(_crfContract).addConsumer(_subscriptionId, _contractToAddAsCOns);
         vm.stopBroadcast();
-
-        console.log("Consumer added successfully!");
     }
 }

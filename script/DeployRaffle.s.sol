@@ -11,13 +11,13 @@ contract DeployRaffle is Script {
         deployRaffle();
     }
 
-    function deployRaffle() public {
+    function deployRaffle() public returns (Raffle raffle) {
         AddConsumer consumer = new AddConsumer(); // init!
         HelperConfig helperConfig = new HelperConfig();
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
 
-        vm.startBroadcast();
-        Raffle raffle = new Raffle(
+        vm.startBroadcast(config.account);
+        raffle = new Raffle(
             config.entranceFee,
             config.vrfCoordinator,
             config.gasLane,
