@@ -5,7 +5,7 @@ ARBITRUM_MAINNET=https://arb-mainnet.g.alchemy.com/v2/QlXFO2edkPcV7HHJcx89G
 ANVIL_RPC_URL=http://127.0.0.1:8545
 
 # Private key / account
-PRIVATE_KEY=your_private_key_here   # or set as env variable
+ANVIL_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80   # or set as env variable
 ACCOUNT=keyStore   # for Anvil / local default signer index
 
 # Forge deploy script
@@ -26,4 +26,4 @@ arbMainnet:
 	${FORGE_SCRIPT} --rpc-url ${ARBITRUM_MAINNET} --account ${ACCOUNT} --broadcast --verify -vvv
 
 anvil:
-	${FORGE_SCRIPT} --rpc-url ${ANVIL_RPC_URL} --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --broadcast -vvvvg
+	${FORGE_SCRIPT} --rpc-url ${ANVIL_RPC_URL} --private-key ${ANVIL_PRIVATE_KEY} --broadcast -vvvvg
