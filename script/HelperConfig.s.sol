@@ -76,7 +76,7 @@ contract HelperConfig is Script, CodeConstants, ReentrancyGuard {
             callbackGasLimit: 500000,
             link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
             entranceFee: 0.01 ether,
-            account: 123, // this onchain so this not mock
+            account: 123, // this is onchain so it's not mock
             maxAmountOfPlayers: 10
         });
     }

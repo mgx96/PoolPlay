@@ -64,6 +64,7 @@ contract RaffleTest is Test, CodeConstants {
 
         vm.prank(PLAYER);
         vm.expectRevert(Raffle.Raffle__NotEnoughETHEntered.selector);
+        //enter raffle with insufficient fee
         raffle.enterRaffle{value: insufficienteFee}();
     }
 
