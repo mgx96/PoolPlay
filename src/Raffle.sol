@@ -115,9 +115,9 @@ contract Raffle is VRFConsumerBaseV2Plus {
     function checkUpkeep(bytes memory) public view returns (bool upkeepNeeded, bytes memory) {
         bool isOpen = s_raffleState == RaffleState.OPEN;
         bool hasBalance = address(this).balance > 0;
-        bool hasPlayers = s_players.length > 0;
+        // bool hasPlayers = s_players.length > 0;
         bool requiredAmountOfPlayers = s_players.length == s_maxAmountOfPlayers;
-        upkeepNeeded = isOpen && hasBalance && hasPlayers && requiredAmountOfPlayers;
+        upkeepNeeded = isOpen && hasBalance && requiredAmountOfPlayers;
         return (upkeepNeeded, "");
     }
 
@@ -135,7 +135,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
             numWords: NUM_WORDS,
             extraArgs: VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: false}))
         });
-        uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
     }
 
     function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {

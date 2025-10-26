@@ -1,6 +1,6 @@
-# PlayPool
+# PooPlay
 
-PlayPool is an experimental decentralized lottery protocol built on Layer 2 networks. It introduces risk-adjusted prize pools with fixed participant sizes, using verifiable on-chain randomness to determine winners in a fully transparent and non-custodial manner.
+PoolPlay is an experimental decentralized lottery protocol built on Layer 2 networks. It introduces risk-adjusted prize pools with fixed participant sizes, using verifiable on-chain randomness to determine winners in a fully transparent and non-custodial manner.
 
 The goal of the project is to explore trusted randomness mechanics and decentralized prize distribution on-chain, while providing a foundation that could evolve into a production-ready protocol.
 
@@ -85,8 +85,8 @@ This repository is an experimental research project and not intended for product
 ## Installation
 
 ```bash
-git clone https://github.com/your-org/playpool.git
-cd playpool
+git clone https://github.com/your-org/poolplay.git
+cd poolplay
 ```
 
 ## Install smart contract dependencies
@@ -140,7 +140,7 @@ forge script script/Deploy.s.sol --rpc-url <NETWORK_RPC> --broadcast
 
 ## Contributing
 
-PlayPool is an open research project. Contributions via pull requests are welcome. For larger discussions, please open an issue to coordinate design proposals.
+PoolPlay is an open research project. Contributions via pull requests are welcome. For larger discussions, please open an issue to coordinate design proposals.
 
 ## License
 
