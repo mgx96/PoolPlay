@@ -73,7 +73,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
         uint8 maxAmountOfPlayers
     ) VRFConsumerBaseV2Plus(vrfCoordinator) {
         i_entranceFee = entranceFee;
-        // @dev The duration of the lottery in seconds
         i_keyHash = gasLane;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
