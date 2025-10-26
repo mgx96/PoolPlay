@@ -12,32 +12,29 @@ jobs:
   check:
     name: Foundry project
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # Force a clean Foundry install with the stable version
-      - name: Install Foundry (force stable)
-        shell: bash
-        run: |
-          set -e
-          curl -L https://foundry.paradigm.xyz | bash
-          export PATH="$PATH:/home/runner/.foundry/bin"
-          /home/runner/.foundry/bin/foundryup -v 1.3.5-stable
-          /home/runner/.foundry/bin/forge --version
+      # ✅ Official installer with pinned stable version
+      - name: Install Foundry (v1.3.0-stable)
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: 1.3.0-stable
+
+      - name: Show Forge version
+        run: forge --version
 
       - name: Run Forge fmt
-        run: |
-          /home/runner/.foundry/bin/forge fmt --check
+        run: forge fmt --check
         id: fmt
 
       - name: Run Forge build
-        run: |
-          /home/runner/.foundry/bin/forge build --sizes
+        run: forge build --sizes
         id: build
 
       - name: Run Forge tests
-        run: |
-          /home/runner/.foundry/bin/forge test -vvv
+        run: forge test -vvv
         id: test
