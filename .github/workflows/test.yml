@@ -21,26 +21,23 @@ jobs:
       - name: Install Foundry (force stable)
         shell: bash
         run: |
-          rm -rf ~/.foundry
+          set -e
           curl -L https://foundry.paradigm.xyz | bash
-          source /home/runner/.bashrc
-          ~/.foundry/bin/foundryup -v 1.3.5-stable
-
-      - name: Show Forge version
-        run: |
-          ~/.foundry/bin/forge --version
+          export PATH="$PATH:/home/runner/.foundry/bin"
+          /home/runner/.foundry/bin/foundryup -v 1.3.5-stable
+          /home/runner/.foundry/bin/forge --version
 
       - name: Run Forge fmt
         run: |
-          ~/.foundry/bin/forge fmt --check
+          /home/runner/.foundry/bin/forge fmt --check
         id: fmt
 
       - name: Run Forge build
         run: |
-          ~/.foundry/bin/forge build --sizes
+          /home/runner/.foundry/bin/forge build --sizes
         id: build
 
       - name: Run Forge tests
         run: |
-          ~/.foundry/bin/forge test -vvv
+          /home/runner/.foundry/bin/forge test -vvv
         id: test
