@@ -4,8 +4,9 @@ pragma solidity ^0.8.22;
 import {Script} from "lib/forge-std/src/Script.sol";
 import {ReentrancyGuard} from "lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 import {MockToken} from "../test/mocks/TokenToFundVRF.sol";
-import {VRFCoordinatorV2Mock} from
-    "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
+import {
+    VRFCoordinatorV2Mock
+} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
 
 abstract contract CodeConstants {
     VRFCoordinatorV2Mock vrfCoordinator;

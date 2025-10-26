@@ -3,8 +3,9 @@ pragma solidity ^0.8.20;
 
 import {console} from "lib/forge-std/src/console.sol";
 import {Script} from "lib/forge-std/src/Script.sol";
-import {VRFCoordinatorV2Mock} from
-    "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
+import {
+    VRFCoordinatorV2Mock
+} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 
@@ -56,7 +57,15 @@ contract FundSbuscription is Script {
         fundSubscription(vrfCoordinator, fundToken, account, uint64(subsId));
     }
 
-    function fundSubscription(address _vrf, address, /*_fundToken*/ uint256 _account, uint64 _subID) public {
+    function fundSubscription(
+        address _vrf,
+        address,
+        /*_fundToken*/
+        uint256 _account,
+        uint64 _subID
+    )
+        public
+    {
         console.log("Funding subscription on chainId:", block.chainid);
         console.log("SubscriptionId:", _subID, "VRFCoordinator:", _vrf);
 

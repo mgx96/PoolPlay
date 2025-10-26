@@ -7,8 +7,9 @@ import {Raffle} from "../src/Raffle.sol"; // Adjust this import depending on you
 import {RaffleFactory} from "../src/RaffleFactory.sol";
 import {DeployRaffle} from "../script/DeployRaffle.s.sol";
 import {HelperConfig, CodeConstants} from "../script/HelperConfig.s.sol";
-import {VRFCoordinatorV2Mock} from
-    "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
+import {
+    VRFCoordinatorV2Mock
+} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
 import {MockToken} from "./mocks/TokenToFundVRF.sol";
 
 contract RaffleTest is Test, CodeConstants {
