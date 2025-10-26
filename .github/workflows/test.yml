@@ -17,10 +17,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: stable
+      # Force a clean Foundry install to ensure the stable version is used
+      - name: Install Foundry (force stable)
+        run: |
+          rm -rf ~/.foundry
+          curl -L https://foundry.paradigm.xyz | bash
+          foundryup -v 1.3.5-stable
 
       - name: Show Forge version
         run: |
