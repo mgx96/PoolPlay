@@ -26,4 +26,4 @@ arbMainnet:
 	${FORGE_SCRIPT} --rpc-url ${ARBITRUM_MAINNET} --account ${ACCOUNT} --broadcast --verify -vvv
 
 anvil:
-	${FORGE_SCRIPT} --rpc-url ${ANVIL_RPC_URL} --private-key ${ANVIL_PRIVATE_KEY} --broadcast -vvvvg
+	${FORGE_SCRIPT} --rpc-url ${ANVIL_RPC_URL} --private-key ${ANVIL_PRIVATE_KEY} --broadcast -vvvv
