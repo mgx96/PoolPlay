@@ -18,32 +18,23 @@ jobs:
         with:
           submodules: recursive
 
-      # ✅ Download prebuilt Foundry release directly
-      - name: Install Foundry (direct binary)
-        shell: bash
-        run: |
-          set -e
-          # Download the latest stable Linux release
-          curl -L https://github.com/foundry-rs/foundry/releases/latest/download/foundry_nightly_linux_amd64.tar.gz -o foundry.tar.gz
-          mkdir -p $HOME/.foundry/bin
-          tar -xzf foundry.tar.gz -C $HOME/.foundry/bin
-          export PATH="$HOME/.foundry/bin:$PATH"
-          forge --version
+      # ✅ Use Foundry's official installer Action
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Show Forge version
+        run: forge --version
 
       - name: Run Forge fmt
-        run: |
-          export PATH="$HOME/.foundry/bin:$PATH"
-          forge fmt --check
+        run: forge fmt --check
         id: fmt
 
       - name: Run Forge build
-        run: |
-          export PATH="$HOME/.foundry/bin:$PATH"
-          forge build --sizes
+        run: forge build --sizes
         id: build
 
       - name: Run Forge tests
-        run: |
-          export PATH="$HOME/.foundry/bin:$PATH"
-          forge test -vvv
+        run: forge test -vvv
         id: test
