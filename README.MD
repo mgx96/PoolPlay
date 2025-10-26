@@ -85,8 +85,8 @@ This repository is an experimental research project and not intended for product
 ## Installation
 
 ```bash
-git clone https://github.com/your-org/playpool.git
-cd playpool
+git clone https://github.com/your-org/poolplay.git
+cd poolplay
 ```
 
 ## Install smart contract dependencies
@@ -140,7 +140,7 @@ forge script script/Deploy.s.sol --rpc-url <NETWORK_RPC> --broadcast
 
 ## Contributing
 
-PlayPool is an open research project. Contributions via pull requests are welcome. For larger discussions, please open an issue to coordinate design proposals.
+PoolPlay is an open research project. Contributions via pull requests are welcome. For larger discussions, please open an issue to coordinate design proposals.
 
 ## License
 
