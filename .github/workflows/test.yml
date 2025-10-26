@@ -18,23 +18,31 @@ jobs:
         with:
           submodules: recursive
 
-      # ✅ Use an existing, downloadable release
-      - name: Install Foundry (v1.3.1-stable)
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: 1.3.1-stable
-
-      - name: Show Forge version
-        run: forge --version
+      # ✅ Manual Foundry installation that always works
+      - name: Install Foundry (force 1.4.3-stable)
+        shell: bash
+        run: |
+          set -e
+          curl -L https://foundry.paradigm.xyz | bash
+          export PATH="$HOME/.foundry/bin:$PATH"
+          source "$HOME/.bashrc" || true
+          foundryup -v 1.4.3-stable || foundryup -v stable
+          forge --version
 
       - name: Run Forge fmt
-        run: forge fmt --check
+        run: |
+          export PATH="$HOME/.foundry/bin:$PATH"
+          forge fmt --check
         id: fmt
 
       - name: Run Forge build
-        run: forge build --sizes
+        run: |
+          export PATH="$HOME/.foundry/bin:$PATH"
+          forge build --sizes
         id: build
 
       - name: Run Forge tests
-        run: forge test -vvv
+        run: |
+          export PATH="$HOME/.foundry/bin:$PATH"
+          forge test -vvv
         id: test
