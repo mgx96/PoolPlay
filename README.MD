@@ -1,6 +1,6 @@
-# PlayPool
+# PooPlay
 
-PlayPool is an experimental decentralized lottery protocol built on Layer 2 networks. It introduces risk-adjusted prize pools with fixed participant sizes, using verifiable on-chain randomness to determine winners in a fully transparent and non-custodial manner.
+PoolPlay is an experimental decentralized lottery protocol built on Layer 2 networks. It introduces risk-adjusted prize pools with fixed participant sizes, using verifiable on-chain randomness to determine winners in a fully transparent and non-custodial manner.
 
 The goal of the project is to explore trusted randomness mechanics and decentralized prize distribution on-chain, while providing a foundation that could evolve into a production-ready protocol.
 
