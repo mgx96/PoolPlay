@@ -18,15 +18,16 @@ jobs:
         with:
           submodules: recursive
 
-      # ✅ Manual Foundry installation that always works
-      - name: Install Foundry (force 1.4.3-stable)
+      # ✅ Download prebuilt Foundry release directly
+      - name: Install Foundry (direct binary)
         shell: bash
         run: |
           set -e
-          curl -L https://foundry.paradigm.xyz | bash
+          # Download the latest stable Linux release
+          curl -L https://github.com/foundry-rs/foundry/releases/latest/download/foundry_nightly_linux_amd64.tar.gz -o foundry.tar.gz
+          mkdir -p $HOME/.foundry/bin
+          tar -xzf foundry.tar.gz -C $HOME/.foundry/bin
           export PATH="$HOME/.foundry/bin:$PATH"
-          source "$HOME/.bashrc" || true
-          foundryup -v 1.4.3-stable || foundryup -v stable
           forge --version
 
       - name: Run Forge fmt
