@@ -78,7 +78,7 @@ This repository is an experimental research project and not intended for product
 | Smart Contracts | Solidity |
 | Development Framework | Foundry |
 | Frontend | Next.js + TypeScript |
-| Networks | Polygon or Arbitrum (TBD) |
+| Networks | Arbitrum One and Arbitrum Sepolia  |
 
 ---
 
