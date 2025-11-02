@@ -11,8 +11,8 @@ The goal of the project is to explore trusted randomness mechanics and decentral
 - Tiered lottery pools with fixed participant sizes (5, 10, 25)
 - Higher entry fees for smaller pools to balance odds and rewards
 - Winner-takes-all distribution model
-- Crypto-native architecture with no centralized custody
-- On-chain verifiable randomness (Chainlink VRF or equivalent)
+- Crypto native architecture with no centralized custody
+- On-chain verifiable randomness (Chainlink VRF)
 - Fully permissionless smart contract interactions
 
 ---
